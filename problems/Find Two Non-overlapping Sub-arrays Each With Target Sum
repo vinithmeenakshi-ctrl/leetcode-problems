@@ -1,0 +1,59 @@
+import java.util.*;
+
+class Solution {
+    public int minSumOfLengths(int[] arr, int target) {
+
+        int n = arr.length;
+        int INF = Integer.MAX_VALUE;
+
+        // dp[i] = minimum length of a valid subarray
+        // found in first i elements
+        int[] dp = new int[n + 1];
+
+        Arrays.fill(dp, INF);
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        // Prefix sum 0 exists at index 0
+        map.put(0, 0);
+
+        int prefixSum = 0;
+        int answer = INF;
+
+        for (int i = 1; i <= n; i++) {
+
+            prefixSum += arr[i - 1];
+
+            // Carry forward previous minimum
+            dp[i] = dp[i - 1];
+
+            // Need previous prefix sum = prefixSum - target
+            if (map.containsKey(prefixSum - target)) {
+
+                int j = map.get(prefixSum - target);
+
+                // Current subarray length
+                int currentLength = i - j;
+
+                // Check if there is a previous non-overlapping subarray
+                if (dp[j] != INF) {
+                    answer = Math.min(
+                        answer,
+                        dp[j] + currentLength
+                    );
+                }
+
+                // Update minimum subarray length
+                dp[i] = Math.min(
+                    dp[i],
+                    currentLength
+                );
+            }
+
+            // Store current prefix sum
+            map.put(prefixSum, i);
+        }
+
+        return answer == INF ? -1 : answer;
+    }
+}
